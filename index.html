@@ -8,12 +8,77 @@
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin:0; padding:0; }
-        #map { position:absolute; top:0; bottom:0; width:100%; }
+        h2,
+h3 {
+  margin: 10px;
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 1em;
+}
+
+p {
+  font-size: 0.85em;
+  margin: 10px;
+  text-align: left;
+}
+
+/**
+* Create a position for the map
+* on the page */
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+/**
+* Set rules for how the map overlays
+* (info box and legend) will be displayed
+* on the page. */
+.map-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 20px;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  border-radius: 3px;
+}
+
+#features {
+  top: 0;
+  height: 100px;
+  margin-top: 20px;
+  width: 250px;
+}
+
+#legend {
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 18px;
+  height: 150px;
+  margin-bottom: 40px;
+  width: 100px;
+}
+
+.legend-key {
+  display: inline-block;
+  border-radius: 20%;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+}
     </style>
 </head>
 <body>
 
 <div id='map'></div>
+<div class='map-overlay' id='features'><h2>First Nations Population</h2><div id='pd'><p>Hover over a province!</p></div></div>
+<div class='map-overlay' id='legend'></div>
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoiY3Bhd3Njb2IiLCJhIjoiY2psMm5oMXJvMDB3ajNwcTgxcHpuNW43byJ9.nW2vN-yZs3nOI3dhOEzeOQ';
 var map = new mapboxgl.Map({
@@ -48,6 +113,26 @@ var map = new mapboxgl.Map({
     style: 'mapbox://styles/cpawscob/cjl2od96p587v2sqpzhupba4r' // stylesheet location
     
 });
+map.on('load', function() {
+  // define layers
+  var layers = ['10000', '30000', '45000', '60000', '80000', '100000', '130000', '160000', '180000', '200000', '220000'];
+var colors = ['#fbd0b1', '#e3b063', '#b5781c', '#cc8314', '#d88f22', '#be8e46', '#ceaa73', '#966317', '#b67411', '#c1780b', '#ed9107'];
+
+});
+map.on('mousemove', function(e) {
+  var provinces = map.queryRenderedFeatures(e.point, {
+    layers: ['canada-pop']
+  });
+
+  if (proinces.length > 0) {
+    document.getElementById('pd').innerHTML = '<h3><strong>' + provinces[0].properties.NAME + '</strong></h3><p><strong><em>' + provinces[0].properties.aboriginal_pop + '</strong> First Nations Population</em></p>';
+  } else {
+    document.getElementById('pd').innerHTML = '<p>Hover over a province!</p>';
+  }
+});
+
+
+
 
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl());
